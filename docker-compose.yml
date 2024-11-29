@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  app:
+    build: ./docker/python
+    ports:
+      - "5000:8080"
+    environment:
+      PROXYSQL_HOST: ${PROXYSQL_HOST}
+      PROXYSQL_USER: ${MYSQL_USER}
+      PROXYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      PROXYSQL_PORT: ${PROXYSQL_PORT}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    depends_on:
+      - proxysql
+    networks:
+      - proxysql_test_net
+
+  proxysql:
+    build: ./docker/proxysql
+    ports:
+      - "6033:6033"
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_MASTER_HOST: ${MYSQL_MASTER_HOST}
+      MYSQL_SLAVE_HOST: ${MYSQL_SLAVE_HOST}
+      MYSQL_VER: ${MYSQL_VER}
+      
+      PROXYSQL_USER: ${MYSQL_USER}
+      PROXYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./docker/proxysql/proxysql.cnf.template:/tmp/proxysql.cnf.template
+    networks:
+      - proxysql_test_net
+
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./docker/mysql/master-data:/var/lib/mysql
+      - ./docker/mysql/master-init:/docker-entrypoint-initdb.d
+    command: --server-id=1 --log-bin=mysql-bin --binlog-do-db=${MYSQL_DATABASE}
+    networks:
+      - proxysql_test_net
+
+  mysql-slave:
+    image: mysql:8.0
+    container_name: mysql-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./docker/mysql/slave-data:/var/lib/mysql
+      - ./docker/mysql/slave-init:/docker-entrypoint-initdb.d
+    depends_on:
+      - mysql-master
+    command: --server-id=2 --relay-log=relay-log-bin --log-bin=mysql-bin --binlog-do-db=${MYSQL_DATABASE}
+    networks:
+      - proxysql_test_net
+
+networks:
+  proxysql_test_net:
+    external: false

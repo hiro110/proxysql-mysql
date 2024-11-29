@@ -1,0 +1,5 @@
+docker/mysql/master-data
+docker/mysql/slave-data
+app-flier-manage-stg_appsettings.json
+backup.json
+.env
