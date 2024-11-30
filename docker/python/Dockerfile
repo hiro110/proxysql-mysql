@@ -2,7 +2,7 @@ FROM --platform=linux/arm64 python:3.9-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y --no-install-recommends \
     default-mysql-client \
     gettext
 

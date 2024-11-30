@@ -27,9 +27,9 @@ services:
       MYSQL_MASTER_HOST: ${MYSQL_MASTER_HOST}
       MYSQL_SLAVE_HOST: ${MYSQL_SLAVE_HOST}
       MYSQL_VER: ${MYSQL_VER}
-      
       PROXYSQL_USER: ${MYSQL_USER}
       PROXYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      USE_SSL: ${USE_SSL}
     volumes:
       - ./docker/proxysql/proxysql.cnf.template:/tmp/proxysql.cnf.template
     networks:

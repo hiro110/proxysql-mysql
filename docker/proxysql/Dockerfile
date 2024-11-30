@@ -1,6 +1,6 @@
-FROM --platform=linux/arm64 proxysql/proxysql:2.4.4
+FROM --platform=linux/arm64 proxysql/proxysql:2.7.1
 
-RUN apt update && apt install -y gettext
+RUN apt update && apt install -y --no-install-recommends gettext
 
 # 必要なファイルをコピー
 COPY ./proxysql.cnf.template /tmp/proxysql.cnf.template

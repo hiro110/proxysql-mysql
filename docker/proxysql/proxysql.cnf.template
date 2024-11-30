@@ -37,8 +37,8 @@ mysql_variables=
 
 mysql_servers =
 (
-    { address="${MYSQL_MASTER_HOST}", port=3306, hostgroup=0, max_connections=200, status="ONLINE" },
-    { address="${MYSQL_SLAVE_HOST}", port=3306, hostgroup=1, max_connections=200, status="ONLINE" }
+    { address="${MYSQL_MASTER_HOST}", port=3306, hostgroup=0, max_connections=200, status="ONLINE", use_ssl=${USE_SSL} },
+    { address="${MYSQL_SLAVE_HOST}", port=3306, hostgroup=1, max_connections=200, status="ONLINE", use_ssl=${USE_SSL} }
 )
 
 mysql_users =
